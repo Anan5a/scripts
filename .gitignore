@@ -1,0 +1,6 @@
+/upload/*
+*.~
+/vendor/
+pusher
+*.log
+*.cache
