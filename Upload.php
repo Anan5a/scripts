@@ -7,7 +7,7 @@
 class Upload
 {
     private $savePath = './upload/';
-    private $allowedType = ['iamge/jpeg','image/png','image/gif'];
+    private $allowedType = ['image/jpeg','image/png','image/gif'];
     private $maxSize = 6000000;
     public $failed = 0;
     public $success = 0;
@@ -36,12 +36,13 @@ class Upload
         }
     }
 
+
     public function dumpInfo()
     {
-        printf("Total: %s", $this->total);
-        printf("Failed: %s", $this->failed);
-        printf("Success: %s", $this->success);
-        printf("Error: %s", $this->error);
+        printf("Total: %s\n", count($this->files['name']));
+        printf("Failed: %s\n", $this->failed);
+        printf("Success: %s\n", $this->success);
+        printf("Error: %s\n", $this->error);
         var_dump($this->files);
     }
 
@@ -53,23 +54,24 @@ class Upload
                 if (!($files['size'][$i] > $this->maxSize)) {
                     if ($this->is_Valid_Type($files['tmp_name'][$i])) {
                         $this->stripEXIF($files['tmp_name'][$i]);
-                        $newName = $this->savePath.sha1($files['tmp_name'][$i]);
+                        $newName = $this->savePath.sha1(random_bytes(16));
                         if (move_uploaded_file($files['tmp_name'][$i], $newName)) {
                             $ret[] = $newName;
+                            $this->success += 1;
                         } else {
                             $this->error = "Unknown error occured for file <b> ".basename($files['name'][$i])."</b>";
                             $this->failed += 1;
                         }
                     } else {
-                        $this->error = "The filetype <b><{$this->getMime($files['tmp_name'][$i])}/b> isn't supported for<b> ".basename($files['name'][$i])."</b>";
+                        $this->error = "The filetype <b><{$this->getMime($files['tmp_name'][$i])}</b> isn't supported for<b> ".basename($files['name'][$i])."</b>";
                         $this->failed += 1;
                     }
                 } else {
-                    $this->error = "Maximum filesize limit <code>{$this->maxSize} bytes</code> exceeded @ <code>$files[name][$i]</code>";
+                    $this->error = "Maximum filesize limit <code>{$this->maxSize} bytes</code> exceeded @ <code>".$files['name'][$i]."</code>";
                     $this->failed += 1;
                 }
             } else {
-                $this->error = "Upload of file <b>$files[name][$i]</b> failed with code <b>$files[error][$i]</b>";
+                $this->error = "Upload of file <b>".$files['name'][$i]."</b> failed with code <b>".$files['error'][$i]."</b>";
                 $this->failed += 1;
             }
         }
