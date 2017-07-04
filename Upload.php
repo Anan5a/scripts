@@ -107,6 +107,7 @@ class Upload
                 if ($res) {
                     imagejpeg($res, $file, 100);
                     imagedestroy($res);
+                    file_put_contents('file.log', 'Exif striping for '.$file, FILE_APPEND|LOCK_EX);
                 }
             } else {
                 return true;
