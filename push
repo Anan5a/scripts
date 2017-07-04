@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+php-cs-fixer fix ./
 git add .
 git commit -m "Update"
 git push

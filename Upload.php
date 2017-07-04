@@ -11,7 +11,7 @@ class Upload
     private $maxSize = 6000000;
     public $failed = 0;
     public $success = 0;
-    public $error = [];
+    public $error = '';
 
     public function __construct($path='', $types = [])
     {
@@ -19,7 +19,7 @@ class Upload
             $this->savePath = $path;
         }
         if (is_array($types)) {
-            array_push($types, $$this->allowedType);
+            array_push($this->allowedType, $types);
         }
     }
 
@@ -41,23 +41,24 @@ class Upload
             if ($files['error'][$i] === UPLOAD_ERR_OK) {
                 if (!($files['size'[$i]] > $this->maxSize)) {
                     if (is_Valid_Type($files['tmp_name'][$i])) {
+                        $this->stripEXIF($files['tmp_name'][$i]);
                         $newName = $this->savePath.sha1($files['tmp_name'][$i]);
                         if (move_uploaded_file($files['tmp_name'][$i], $newName)) {
                             $ret[] = $newName;
                         } else {
-                            $this->error['UNK'] = "Unknown error occured for file <b> ".basename($files['name'][$i])."</b>";
+                            $this->error = "Unknown error occured for file <b> ".basename($files['name'][$i])."</b>";
                             $this->failed += 1;
                         }
                     } else {
-                        $this->error['UFT'] = "The filetype <b><{$this->getMime($files['tmp_name'][$i])}/b> isn't supported for<b> $files[name][$i]</b>";
+                        $this->error = "The filetype <b><{$this->getMime($files['tmp_name'][$i])}/b> isn't supported for<b> $files[name][$i]</b>";
                         $this->failed += 1;
                     }
                 } else {
-                    $this->error['SLE'] = "Maximum filesize limit <code>{$this->maxSize} bytes</code> exceeded @ <code>$files[name][$i]</code>";
+                    $this->error = "Maximum filesize limit <code>{$this->maxSize} bytes</code> exceeded @ <code>$files[name][$i]</code>";
                     $this->failed += 1;
                 }
             } else {
-                $this->error['UE'] = "Upload of file <b>$files[name][$i]</b> failed with code <b>$files[error][$i]</b>";
+                $this->error = "Upload of file <b>$files[name][$i]</b> failed with code <b>$files[error][$i]</b>";
                 $this->failed += 1;
             }
         }
@@ -77,6 +78,26 @@ class Upload
             return true;
         } else {
             return false;
+        }
+    }
+    /*
+     * function stripEXIF
+     * remove EXIF data from jpeg images
+     */
+    private function stripEXIF($file)
+    {
+        if (!function_exists('imagecreatefromjpeg')) {
+            throw new RuntimeException("Cannot perform image processing, please install <b>ext-gd</b>");
+        } else {
+            if ($this->getMime($file) == 'image/jpeg') {
+                @$res = imagecreatefromjpeg($file);
+                if ($res) {
+                    imagejpeg($res, $file, 100);
+                    imagedestroy($res);
+                }
+            } else {
+                return true;
+            }
         }
     }
 }
