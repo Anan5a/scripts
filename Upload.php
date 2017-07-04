@@ -24,8 +24,11 @@ class Upload
         }
     }
 
-    public function upload($files)
+    public function upload($files, $max=null)
     {
+        if ($max != null && is_int($max)) {
+            $this->maxSize = $max;
+        }
         $this->files = $files;
         $ret = $this->tryUpload($files);
         
