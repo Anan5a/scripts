@@ -20,7 +20,9 @@ class Upload
             $this->savePath = $path;
         }
         if (is_array($types)) {
-            array_push($this->allowedType, $types);
+            foreach ($types as $type) {
+                $this->allowedType[] = $type;
+            }
         }
     }
 
