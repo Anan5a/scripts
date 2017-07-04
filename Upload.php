@@ -66,7 +66,7 @@ class Upload
                             $this->failed += 1;
                         }
                     } else {
-                        $this->error = "The filetype <b><{$this->getMime($files['tmp_name'][$i])}</b> isn't supported for<b> ".basename($files['name'][$i])."</b>";
+                        $this->error = "The filetype <b>".$this->getMime($files['tmp_name'][$i])."</b> isn't supported for<b> ".basename($files['name'][$i])."</b>";
                         $this->failed += 1;
                     }
                 } else {
@@ -110,7 +110,7 @@ class Upload
                 if ($res) {
                     imagejpeg($res, $file, 100);
                     imagedestroy($res);
-                    file_put_contents('file.log', 'Exif striping for '.$file, FILE_APPEND|LOCK_EX);
+                    file_put_contents('file.log', 'Exif striping for '.$file."\n", FILE_APPEND|LOCK_EX);
                 }
             } else {
                 return true;
