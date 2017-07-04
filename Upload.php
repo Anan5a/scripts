@@ -12,6 +12,7 @@ class Upload
     public $failed = 0;
     public $success = 0;
     public $error = '';
+    public $files;
 
     public function __construct($path='', $types = [])
     {
@@ -25,13 +26,23 @@ class Upload
 
     public function upload($files)
     {
+        $this->files = $files;
         $ret = $this->tryUpload($files);
-        //if the first element isn\t null then return $ret
-        if ($ret[0] != null) {
+        
+        if (!empty($ret)) {
             return $ret;
         } else {
             return false;
         }
+    }
+
+    public function dumpInfo()
+    {
+        printf("Total: %s", $this->total);
+        printf("Failed: %s", $this->failed);
+        printf("Success: %s", $this->success);
+        printf("Error: %s", $this->error);
+        var_dump($this->files);
     }
 
     private function tryUpload($files)
@@ -39,8 +50,8 @@ class Upload
         $ret = [];
         for ($i = 0; $i < count($files['name']); $i++) {
             if ($files['error'][$i] === UPLOAD_ERR_OK) {
-                if (!($files['size'[$i]] > $this->maxSize)) {
-                    if (is_Valid_Type($files['tmp_name'][$i])) {
+                if (!($files['size'][$i] > $this->maxSize)) {
+                    if ($this->is_Valid_Type($files['tmp_name'][$i])) {
                         $this->stripEXIF($files['tmp_name'][$i]);
                         $newName = $this->savePath.sha1($files['tmp_name'][$i]);
                         if (move_uploaded_file($files['tmp_name'][$i], $newName)) {
@@ -50,7 +61,7 @@ class Upload
                             $this->failed += 1;
                         }
                     } else {
-                        $this->error = "The filetype <b><{$this->getMime($files['tmp_name'][$i])}/b> isn't supported for<b> $files[name][$i]</b>";
+                        $this->error = "The filetype <b><{$this->getMime($files['tmp_name'][$i])}/b> isn't supported for<b> ".basename($files['name'][$i])."</b>";
                         $this->failed += 1;
                     }
                 } else {
