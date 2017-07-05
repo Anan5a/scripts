@@ -58,7 +58,7 @@ class Upload
                 if (!($files['size'][$i] > $this->maxSize)) {
                     if ($this->is_Valid_Type($files['tmp_name'][$i])) {
                         $this->stripEXIF($files['tmp_name'][$i]);
-                        $newName = $this->savePath.sha1(random_bytes(16));
+                        $newName = $this->savePath.sha1(random_bytes(16)).(explode('/',$upl->getMime($$files['tmp_name'][$i])))[1];
                         if (move_uploaded_file($files['tmp_name'][$i], $newName)) {
                             $ret[] = $newName;
                             $this->success += 1;
@@ -88,7 +88,7 @@ class Upload
         return $finfo->file($file);
     }
 
-    private function is_Valid_Type($file)
+    public function is_Valid_Type($file)
     {
         $mime = $this->getMime($file);
         return in_array($mime, $this->allowedType);
