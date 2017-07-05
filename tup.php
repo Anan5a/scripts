@@ -19,11 +19,11 @@ function del()
 {
     $f = glob('upload/*');
     foreach ($f as $value) {
-        if (filemtime($value)+(60) > time()) {
+        if (filemtime($value)+(3600) > time()) {
             unlink($value);
             printf('<br> Deleted <strong>%s</strong>', $value);
         }
     }
 }
-echo "/*********************************************************************************/";
+echo "/********These files are deleted!********/";
 del();
