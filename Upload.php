@@ -2,7 +2,7 @@
 /**
  * Class Upload
  * https://github.com/Anan5a/scripts
- * Requires PHP => 7.0.0
+ * Requires PHP >= 7.0.0
  *
  * @author S. M. A. Sayem Prodhan (Anan5a)
  */
@@ -63,19 +63,19 @@ class Upload
                             $ret[] = $newName;
                             $this->success += 1;
                         } else {
-                            $this->error = 'Unknown error occured for file <strong> ' . basename($files['name'][$i]) . '</strong>';
+                            $this->error .= 'Unknown error occured for file <strong> ' . basename($files['name'][$i]) . '</strong><br>';
                             $this->failed += 1;
                         }
                     } else {
-                        $this->error = 'The filetype <strong>' . $this->getMime($files['tmp_name'][$i]) . '</strong> isn\'t supported for <strong>' . basename($files['name'][$i]) . '</strong>';
+                        $this->error .= 'The filetype <strong>' . $this->getMime($files['tmp_name'][$i]) . '</strong> isn\'t supported for <strong>' . basename($files['name'][$i]) . '</strong><br>';
                         $this->failed += 1;
                     }
                 } else {
-                    $this->error = "Maximum filesize limit <code>{$this->maxSize} bytes</code> exceeded @ <code>" . $files['name'][$i] . '</code>';
+                    $this->error .= "Maximum filesize limit <code>{$this->maxSize} bytes</code> exceeded @ <code>" . $files['name'][$i] . '</code><br>';
                     $this->failed += 1;
                 }
             } else {
-                $this->error = 'Upload of file <strong>' . $files['name'][$i] . '</strong> failed with code <strong>' . $files['error'][$i] . '</strong>';
+                $this->error .= 'Upload of file <strong>' . $files['name'][$i] . '</strong> failed with code <strong>' . $files['error'][$i] . '</strong><br>';
                 $this->failed += 1;
             }
         }
