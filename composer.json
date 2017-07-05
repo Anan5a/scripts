@@ -2,8 +2,6 @@
 "require":{
 "php":">=7.0",
 "ext-mbstring":"*",
-"ext-gd":"*",
-"ext-xdebug":"*"
-
+"ext-gd":"*"
 }
 }
