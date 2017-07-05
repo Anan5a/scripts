@@ -19,7 +19,7 @@ function del()
 {
     $f = glob('upload/*');
     foreach ($f as $value) {
-        if ( time() > filemtime($value)+(3600)) {
+        if (time() > filemtime($value)+(3600)) {
             unlink($value);
             printf('<br> Deleted <strong>%s</strong><br>', $value);
         }
