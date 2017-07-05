@@ -1,20 +1,22 @@
 <?php
-
 /**
  * Class Upload
+ * https://github.com/Anan5a/scripts
+ * Requires PHP => 7.0.0
+ *
  * @author S. M. A. Sayem Prodhan (Anan5a)
  */
 class Upload
 {
     private $savePath = './upload/';
-    private $allowedType = ['image/jpeg','image/png','image/gif'];
+    private $allowedType = ['image/jpeg', 'image/png', 'image/gif'];
     private $maxSize = 6000000;
     public $failed = 0;
     public $success = 0;
     public $error = '';
     public $files;
 
-    public function __construct($path='', $types = [])
+    public function __construct($path = '', $types = [])
     {
         if (is_dir($path)) {
             $this->savePath = $path;
@@ -26,19 +28,15 @@ class Upload
         }
     }
 
-    public function upload($files, $max=null)
+    public function upload($files, $max = null)
     {
-        if ($max != null && is_int($max)) {
+        if ($max !== null && is_int($max)) {
             $this->maxSize = $max;
         }
         $this->files = $files;
         $ret = $this->tryUpload($files);
-        
-        if (!empty($ret)) {
-            return $ret;
-        } else {
-            return false;
-        }
+
+        return $ret ?: false;
     }
 
 
@@ -54,7 +52,8 @@ class Upload
     private function tryUpload($files)
     {
         $ret = [];
-        for ($i = 0; $i < count($files['name']); $i++) {
+        $count = count($files['name']);
+        for ($i = 0; $i < $count; $i++) {
             if ($files['error'][$i] === UPLOAD_ERR_OK) {
                 if (!($files['size'][$i] > $this->maxSize)) {
                     if ($this->is_Valid_Type($files['tmp_name'][$i])) {
@@ -64,19 +63,19 @@ class Upload
                             $ret[] = $newName;
                             $this->success += 1;
                         } else {
-                            $this->error = "Unknown error occured for file <b> ".basename($files['name'][$i])."</b>";
+                            $this->error = 'Unknown error occured for file <strong> ' . basename($files['name'][$i]) . '</strong>';
                             $this->failed += 1;
                         }
                     } else {
-                        $this->error = "The filetype <b>".$this->getMime($files['tmp_name'][$i])."</b> isn't supported for<b> ".basename($files['name'][$i])."</b>";
+                        $this->error = 'The filetype <strong>' . $this->getMime($files['tmp_name'][$i]) . '</strong> isn\'t supported for <strong>' . basename($files['name'][$i]) . '</strong>';
                         $this->failed += 1;
                     }
                 } else {
-                    $this->error = "Maximum filesize limit <code>{$this->maxSize} bytes</code> exceeded @ <code>".$files['name'][$i]."</code>";
+                    $this->error = "Maximum filesize limit <code>{$this->maxSize} bytes</code> exceeded @ <code>" . $files['name'][$i] . '</code>';
                     $this->failed += 1;
                 }
             } else {
-                $this->error = "Upload of file <b>".$files['name'][$i]."</b> failed with code <b>".$files['error'][$i]."</b>";
+                $this->error = 'Upload of file <strong>' . $files['name'][$i] . '</strong> failed with code <strong>' . $files['error'][$i] . '</strong>';
                 $this->failed += 1;
             }
         }
@@ -91,32 +90,29 @@ class Upload
 
     private function is_Valid_Type($file)
     {
-        $mime  = $this->getMime($file);
-        if (in_array($mime, $this->allowedType)) {
-            return true;
-        } else {
-            return false;
-        }
+        $mime = $this->getMime($file);
+        return in_array($mime, $this->allowedType);
     }
-    /*
-     * function stripEXIF
-     * remove EXIF data from jpeg images
-     */
+
+    /** Removes EXIF data from jpeg images. */
     private function stripEXIF($file)
     {
         if (!function_exists('imagecreatefromjpeg')) {
-            throw new RuntimeException("Cannot perform image processing, please install <b>ext-gd</b>");
-        } else {
-            if ($this->getMime($file) == 'image/jpeg') {
-                @$res = imagecreatefromjpeg($file);
-                if ($res) {
-                    imagejpeg($res, $file, 100);
-                    imagedestroy($res);
-                    file_put_contents('file.log', 'Exif striping for '.$file."\n", FILE_APPEND|LOCK_EX);
-                }
-            } else {
-                return true;
-            }
+            throw new RuntimeException('Cannot perform image processing, please install <strong>ext-gd</strong>.');
         }
+
+        if ($this->getMime($file) !== 'image/jpeg') {
+            return true;
+        }
+
+        try {
+            $res = imagecreatefromjpeg($file);
+        } catch (\Exception $e) {
+            throw new RuntimeException('Failed to strip Exif data for ' . $file . '.');
+        }
+
+        imagejpeg($res, $file, 100);
+        imagedestroy($res);
+        file_put_contents('file.log', 'Exif striping for ' . $file . "\n", FILE_APPEND | LOCK_EX);
     }
 }
