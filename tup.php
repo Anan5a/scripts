@@ -11,7 +11,7 @@ if (isset($_POST['submit'])) {
     } else {
         echo "<h1>No file uploaded!</h1>";
     }
-   // $upl->dumpInfo();
+    $upl->dumpInfo();
 }
 
 //Deletor for demo. don't use the following code
