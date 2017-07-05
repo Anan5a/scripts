@@ -4,7 +4,7 @@ if (isset($_POST['submit'])) {
     echo "Max 5MB<br>";
     $upl = new Upload();
     $t = $upl->upload($_FILES['im']);
-    if (!$t) {
+    if (!empty($t)) {
         foreach ($t as $r) {
             echo "<a href=\'/$r\'>$r</a>";
         }
@@ -21,9 +21,9 @@ function del()
     foreach ($f as $value) {
         if (filemtime($value)+(3600) > time()) {
             unlink($value);
-            printf('<br> Deleted <strong>%s</strong>', $value);
+            printf('<br> Deleted <strong>%s</strong><br>', $value);
         }
     }
 }
-echo "/********These files are deleted!********/";
+echo "/********These files are deleted!********/<br>";
 del();
