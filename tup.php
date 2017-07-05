@@ -6,7 +6,7 @@ if (isset($_POST['submit'])) {
     $t = $upl->upload($_FILES['im']);
     if (!empty($t)) {
         foreach ($t as $r) {
-            echo "<a href='/".$r."'>$r.{explode('/',$upl->getMime($r))[1]}</a>";
+            echo "<a href='/".$r."'>$r</a><br>";
         }
     } else {
         echo "<h1>No file uploaded!</h1>";
