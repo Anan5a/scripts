@@ -18,12 +18,14 @@ if (isset($_POST['submit'])) {
 function del()
 {
     $f = glob('upload/*');
+        
+    echo "/********These files are deleted!********/<br>";
     foreach ($f as $value) {
-        if (time() > filemtime($value)+(3600)) {
+        if (time() - filemtime($value) > (3600)) {
             unlink($value);
             printf('<br> Deleted <strong>%s</strong><br>', $value);
         }
     }
 }
-echo "/********These files are deleted!********/<br>";
+
 del();
